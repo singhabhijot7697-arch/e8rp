@@ -8,18 +8,9 @@ const owners = [
 ];
 
 async function canUse(client, interaction) {
-
-  const userId = interaction.user.id;
-
-  // ✅ OWNER ALWAYS ALLOWED
-  if (owners.includes(userId)) return true;
-
-  // ✅ USER WHITELIST
-  if (data.isUser(userId)) return true;
-
-  // ✅ ROLE WHITELIST
+  if (owners.includes(interaction.user.id)) return true;
+  if (data.isUser(interaction.user.id)) return true;
   if (data.isRole(interaction.guild.id, interaction.member)) return true;
-
   return false;
 }
 

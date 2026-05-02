@@ -1,8 +1,13 @@
 {
+  "name": "eight-streets-rp-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
-    "@discordjs/voice": "^0.19.2",
-    "discord.js": "^14.26.3",
-    "dotenv": "^17.4.2",
-    "sqlite3": "^6.0.1"
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.0.0",
+    "@discordjs/voice": "^0.16.0"
   }
 }

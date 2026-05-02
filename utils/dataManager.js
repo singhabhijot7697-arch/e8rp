@@ -1,87 +1,93 @@
 const fs = require("fs");
-
 const file = "./data.json";
 
 function load() {
   return JSON.parse(fs.readFileSync(file, "utf8"));
 }
-
 function save(data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
 module.exports = {
 
-  // ✅ USER WL
-  addUser(userId) {
-    const data = load();
-    if (!data.whitelist.includes(userId)) {
-      data.whitelist.push(userId);
-      save(data);
+  // ✅ USERS
+  addUser(id) {
+    const d = load();
+    if (!d.whitelist.includes(id)) {
+      d.whitelist.push(id);
+      save(d);
     }
   },
-
-  removeUser(userId) {
-    const data = load();
-    data.whitelist = data.whitelist.filter(id => id !== userId);
-    save(data);
+  removeUser(id) {
+    const d = load();
+    d.whitelist = d.whitelist.filter(x => x !== id);
+    save(d);
+  },
+  isUser(id) {
+    return load().whitelist.includes(id);
   },
 
-  isUser(userId) {
-    const data = load();
-    return data.whitelist.includes(userId);
-  },
-
-  // ✅ ROLE WL
-  addRole(guildId, roleId) {
-    const data = load();
-    if (!data.wl_roles[guildId]) data.wl_roles[guildId] = [];
-
-    if (!data.wl_roles[guildId].includes(roleId)) {
-      data.wl_roles[guildId].push(roleId);
-      save(data);
+  // ✅ ROLES
+  addRole(gid, rid) {
+    const d = load();
+    if (!d.wl_roles[gid]) d.wl_roles[gid] = [];
+    if (!d.wl_roles[gid].includes(rid)) {
+      d.wl_roles[gid].push(rid);
+      save(d);
     }
   },
-
-  removeRole(guildId, roleId) {
-    const data = load();
-    if (!data.wl_roles[guildId]) return;
-
-    data.wl_roles[guildId] =
-      data.wl_roles[guildId].filter(r => r !== roleId);
-
-    save(data);
+  removeRole(gid, rid) {
+    const d = load();
+    if (!d.wl_roles[gid]) return;
+    d.wl_roles[gid] = d.wl_roles[gid].filter(r => r !== rid);
+    save(d);
   },
-
-  isRole(guildId, member) {
-    const data = load();
-    const roles = data.wl_roles[guildId] || [];
-
+  isRole(gid, member) {
+    const roles = load().wl_roles[gid] || [];
     return member.roles.cache.some(r => roles.includes(r.id));
   },
 
-  // ✅ AUDIT LOG
-  setAudit(guildId, channelId) {
-    const data = load();
-    data.auditLogs[guildId] = channelId;
-    save(data);
+  // ✅ LOG CHANNELS
+  setAudit(gid, cid) {
+    const d = load();
+    d.auditLogs[gid] = cid;
+    save(d);
+  },
+  getAudit(gid) {
+    return load().auditLogs[gid];
   },
 
-  getAudit(guildId) {
-    const data = load();
-    return data.auditLogs[guildId];
+  setMod(gid, cid) {
+    const d = load();
+    d.modLogs[gid] = cid;
+    save(d);
+  },
+  getMod(gid) {
+    return load().modLogs[gid];
   },
 
-  // ✅ MOD LOG
-  setMod(guildId, channelId) {
-    const data = load();
-    data.modLogs[guildId] = channelId;
-    save(data);
+  // ✅ AI CHANNEL
+  setAI(gid, cid) {
+    const d = load();
+    d.ai_channel[gid] = cid;
+    save(d);
+  },
+  getAI(gid) {
+    return load().ai_channel[gid];
   },
 
-  getMod(guildId) {
-    const data = load();
-    return data.modLogs[guildId];
+  // ✅ AI CUSTOM
+  addAI(gid, q, a) {
+    const d = load();
+    d.ai_custom.push({ guildId: gid, question: q, answer: a });
+    save(d);
+  },
+  listAI(gid) {
+    return load().ai_custom.filter(x => x.guildId === gid);
+  },
+  removeAI(id) {
+    const d = load();
+    d.ai_custom.splice(id, 1);
+    save(d);
   }
-
 };

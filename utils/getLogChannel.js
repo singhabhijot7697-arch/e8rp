@@ -1,6 +1,6 @@
 const data = require("./dataManager");
 
-module.exports = (client, guildId) => {
-  const id = data.getAudit(guildId);
-  return client.channels.cache.get(id);
+module.exports = (client, gid) => {
+  const id = data.getAudit(gid);
+  return id ? client.channels.cache.get(id) : null;
 };
