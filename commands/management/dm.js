@@ -1,18 +1,18 @@
 const { SlashCommandBuilder } = require("discord.js");
-const ownerLog = require("../../utils/ownerLogger");
+const log = require("../../utils/commandLogger");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("dm")
-    .setDescription("Send DM")
+    .setDescription("Send DM to a user")
     .addUserOption(o =>
       o.setName("user")
-        .setDescription("User")
+        .setDescription("User to DM")
         .setRequired(true)
     )
     .addStringOption(o =>
       o.setName("message")
-        .setDescription("Message")
+        .setDescription("Message content")
         .setRequired(true)
     ),
 
@@ -24,19 +24,13 @@ module.exports = {
     try {
       await user.send(msg);
 
-      // ✅ OWNER LOG
-      ownerLog(client, {
-        user: interaction.user,
-        command: "/dm",
-        guild: interaction.guild,
-        channel: interaction.channel.name,
-        details: `To ${user.tag}: ${msg}`
-      });
+      log(client, interaction, `DM to ${user.tag}: ${msg}`);
 
-      interaction.editReply("✅ DM sent");
+      // ✅ PRIVATE CONFIRM
+      await interaction.editReply("✅ DM sent");
 
     } catch {
-      interaction.editReply("❌ DM failed");
+      await interaction.editReply("❌ Couldn't send DM (user has DMs disabled)");
     }
   }
 };

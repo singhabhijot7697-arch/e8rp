@@ -20,9 +20,10 @@ module.exports = {
             .setColor(0x5865F2)
             .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
             .setDescription(
-              `**Role added**\n` +
-              `${added.map(r => `<@&${r.id}>`).join(", ")}\n\n` +
-              `ID: ${user.id} • ${new Date().toLocaleString()}`
+`**Role added**
+${added.map(r => `<@&${r.id}>`).join(", ")}
+
+ID: ${user.id} • ${new Date().toLocaleString()}`
             )
         ]
       });
@@ -35,9 +36,42 @@ module.exports = {
             .setColor(0x5865F2)
             .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
             .setDescription(
-              `**Role removed**\n` +
-              `${removed.map(r => `<@&${r.id}>`).join(", ")}\n\n` +
-              `ID: ${user.id} • ${new Date().toLocaleString()}`
+`**Role removed**
+${removed.map(r => `<@&${r.id}>`).join(", ")}
+
+ID: ${user.id} • ${new Date().toLocaleString()}`
+            )
+        ]
+      });
+    }
+
+    if (!oldM.communicationDisabledUntil && newM.communicationDisabledUntil) {
+      ch.send({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(0x5865F2)
+            .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
+            .setDescription(
+`**Member Timeout**
+<@${user.id}>
+
+ID: ${user.id} • ${new Date().toLocaleString()}`
+            )
+        ]
+      });
+    }
+
+    if (oldM.communicationDisabledUntil && !newM.communicationDisabledUntil) {
+      ch.send({
+        embeds: [
+          new EmbedBuilder()
+            .setColor(0x5865F2)
+            .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
+            .setDescription(
+`**Member Removed From Timeout**
+<@${user.id}>
+
+ID: ${user.id} • ${new Date().toLocaleString()}`
             )
         ]
       });

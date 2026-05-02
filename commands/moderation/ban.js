@@ -1,13 +1,12 @@
-const { SlashCommandBuilder } = require("discord.js");
-const getModLogChannel = require("../../utils/getModLogChannel");
-const createEmbed = require("../../utils/modEmbed");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const log = require("../../utils/commandLogger");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("ban")
     .setDescription("Ban user")
     .addUserOption(o =>
-      o.setName("user").setRequired(true).setDescription("User")
+      o.setName("user").setDescription("User").setRequired(true)
     )
     .addStringOption(o =>
       o.setName("reason").setDescription("Reason")
@@ -16,16 +15,22 @@ module.exports = {
   async execute(interaction, client) {
 
     const user = interaction.options.getUser("user");
-    const reason = interaction.options.getString("reason") || "No reason given";
+    const reason = interaction.options.getString("reason") || "No reason";
 
-    await interaction.guild.members.ban(user.id).catch(()=>{});
+    await interaction.guild.members.ban(user.id, { reason }).catch(() => {});
 
-    const ch = await getModLogChannel(client, interaction.guild.id);
+    const embed = new EmbedBuilder()
+      .setColor(0xED4245)
+      .setTitle("🔨 You have been banned")
+      .addFields(
+        { name: "Server", value: interaction.guild.name },
+        { name: "Reason", value: reason }
+      )
+      .setTimestamp();
 
-    if (ch) {
-      const embed = createEmbed(user, interaction.user, reason);
-      ch.send({ embeds: [embed] });
-    }
+    user.send({ embeds: [embed] }).catch(() => {});
+
+    log(client, interaction, `Banned ${user.tag} | ${reason}`);
 
     interaction.editReply("✅ Banned");
   }

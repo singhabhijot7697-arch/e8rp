@@ -1,12 +1,6 @@
-module.exports = function (client, guildId) {
-  return new Promise((resolve) => {
-    client.db.get(
-      `SELECT channelId FROM modlogs WHERE guildId=?`,
-      [guildId],
-      (err, row) => {
-        if (!row) return resolve(null);
-        resolve(client.channels.cache.get(row.channelId));
-      }
-    );
-  });
+const data = require("./dataManager");
+
+module.exports = (client, guildId) => {
+  const id = data.getMod(guildId);
+  return client.channels.cache.get(id);
 };

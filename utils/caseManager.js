@@ -1,4 +1,5 @@
 module.exports = {
+
   create(client) {
     client.db.run(`
       CREATE TABLE IF NOT EXISTS cases (
@@ -13,24 +14,21 @@ module.exports = {
   },
 
   add(client, data) {
-    return new Promise((res) => {
+    return new Promise((resolve) => {
       client.db.run(
         `INSERT INTO cases VALUES (NULL,?,?,?,?,?)`,
-        [data.guildId, data.userId, data.action, data.reason, Date.now()],
+        [
+          data.guildId,
+          data.userId,
+          data.action,
+          data.reason,
+          Date.now()
+        ],
         function () {
-          res(this.lastID);
+          resolve(this.lastID);
         }
       );
     });
-  },
-
-  getUser(client, guildId, userId) {
-    return new Promise((res) => {
-      client.db.all(
-        `SELECT * FROM cases WHERE guildId=? AND userId=?`,
-        [guildId, userId],
-        (e, rows) => res(rows || [])
-      );
-    });
   }
+
 };

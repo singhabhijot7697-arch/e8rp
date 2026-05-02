@@ -1,31 +1,23 @@
 const { SlashCommandBuilder } = require("discord.js");
+const data = require("../../utils/dataManager");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("setauditlogs")
     .setDescription("Set audit logs channel")
-    .addChannelOption(option =>
-      option
-        .setName("channel")
+    .addChannelOption(o =>
+      o.setName("channel")
         .setDescription("Channel for logs")
         .setRequired(true)
     ),
 
-  async execute(interaction, client) {
+  async execute(interaction) {
 
     const channel = interaction.options.getChannel("channel");
 
-    client.db.run(
-      `INSERT OR REPLACE INTO config (guildId, auditChannel) VALUES (?, ?)`,
-      [interaction.guild.id, channel.id],
-      (err) => {
-        if (err) {
-          console.error(err);
-          return interaction.editReply("❌ Failed to set audit logs");
-        }
+    // ✅ MUST BE INSIDE FUNCTION
+    data.setAudit(interaction.guild.id, channel.id);
 
-        interaction.editReply(`✅ Audit logs set to ${channel}`);
-      }
-    );
+    await interaction.editReply(`✅ Audit logs set to ${channel}`);
   }
 };

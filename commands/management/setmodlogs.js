@@ -1,31 +1,23 @@
 const { SlashCommandBuilder } = require("discord.js");
+const data = require("../../utils/dataManager");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("setmodlogs")
-    .setDescription("Set moderation logs channel")
-    .addChannelOption(option =>
-      option
-        .setName("channel")
-        .setDescription("Channel for mod logs")
+    .setDescription("Set mod logs channel")
+    .addChannelOption(o =>
+      o.setName("channel")
+        .setDescription("Channel")
         .setRequired(true)
     ),
 
-  async execute(interaction, client) {
+  async execute(interaction) {
 
     const channel = interaction.options.getChannel("channel");
 
-    client.db.run(
-      `INSERT OR REPLACE INTO modlogs (guildId, channelId) VALUES (?, ?)`,
-      [interaction.guild.id, channel.id],
-      (err) => {
-        if (err) {
-          console.error(err);
-          return interaction.editReply("❌ Failed to set mod logs");
-        }
+    // ✅ FIX
+    data.setMod(interaction.guild.id, channel.id);
 
-        interaction.editReply(`✅ Mod logs set to ${channel}`);
-      }
-    );
+    await interaction.editReply(`✅ Mod logs set to ${channel}`);
   }
 };

@@ -1,23 +1,22 @@
 const { SlashCommandBuilder } = require("discord.js");
+const data = require("../../utils/dataManager");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("wlrole")
-    .setDescription("Whitelist role")
+    .setDescription("Add role to whitelist")
     .addRoleOption(o =>
       o.setName("role")
-        .setDescription("Role to whitelist")
+        .setDescription("Role")
         .setRequired(true)
     ),
 
-  async execute(interaction, client) {
+  async execute(interaction) {
+
     const role = interaction.options.getRole("role");
 
-    client.db.run(
-      `INSERT OR IGNORE INTO wl_roles VALUES (?, ?)`,
-      [interaction.guild.id, role.id]
-    );
+    data.addRole(interaction.guild.id, role.id);
 
-    interaction.editReply("✅ Role whitelisted");
+    await interaction.editReply("✅ Role added");
   }
 };

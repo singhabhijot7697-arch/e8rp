@@ -4,24 +4,25 @@ const getLogChannel = require("../../utils/getLogChannel");
 module.exports = {
   name: "messageDelete",
   async execute(msg, client) {
-    if (!msg.guild || msg.author?.bot) return;
+    if (!msg.guild || !msg.author || msg.author.bot) return;
 
     const ch = await getLogChannel(client, msg.guild.id);
     if (!ch) return;
 
-    const embed = new EmbedBuilder()
-      .setColor(0x5865F2)
-      .setAuthor({
-        name: msg.author.username,
-        iconURL: msg.author.displayAvatarURL()
-      })
-      .setDescription(
-        `**Message deleted in ${msg.channel}**\n` +
-        `${msg.content || "No content"}\n\n` +
-        `Message ID: ${msg.id}\n` +
-        `ID: ${msg.author.id} • ${new Date().toLocaleString()}`
-      );
+    ch.send({
+      embeds: [
+        new EmbedBuilder()
+          .setColor(0x5865F2)
+          .setAuthor({ name: msg.author.username, iconURL: msg.author.displayAvatarURL() })
+          .setDescription(
+`**Message deleted in ${msg.channel}**
 
-    ch.send({ embeds: [embed] });
+${msg.content || "No content"}
+
+Message ID: ${msg.id}
+ID: ${msg.author.id} • ${new Date().toLocaleString()}`
+          )
+      ]
+    });
   }
 };

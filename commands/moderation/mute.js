@@ -6,16 +6,19 @@ module.exports = {
     .setDescription("Mute user")
     .addUserOption(o =>
       o.setName("user")
-        .setDescription("User")
-        .setRequired(true)
-    )
-    .addStringOption(o =>
-      o.setName("time")
-        .setDescription("Time (1h, 30m)")
+        .setDescription("User to mute")
         .setRequired(true)
     ),
 
-  async execute(interaction) {
-    interaction.editReply("✅ Muted");
+  async execute(interaction, client, canUse) {
+
+    if (!(await canUse(client, interaction)))
+      return interaction.editReply("❌ Not allowed");
+
+    const member = interaction.options.getMember("user");
+
+    await member.timeout(10 * 60 * 1000).catch(() => {});
+
+    interaction.editReply("🔇 User muted");
   }
 };

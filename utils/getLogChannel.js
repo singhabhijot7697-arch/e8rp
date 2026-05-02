@@ -1,12 +1,6 @@
-module.exports = function (client, guildId) {
-  return new Promise((resolve) => {
-    client.db.get(
-      `SELECT auditChannel FROM config WHERE guildId=?`,
-      [guildId],
-      (err, row) => {
-        if (!row) return resolve(null);
-        resolve(client.channels.cache.get(row.auditChannel));
-      }
-    );
-  });
+const data = require("./dataManager");
+
+module.exports = (client, guildId) => {
+  const id = data.getAudit(guildId);
+  return client.channels.cache.get(id);
 };

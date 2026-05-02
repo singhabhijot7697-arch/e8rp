@@ -9,9 +9,10 @@ module.exports = function createModEmbed(user, moderator, reason) {
       iconURL: user.displayAvatarURL()
     })
     .setDescription(
-      `Offender: ${user.username} <@${user.id}>\n` +
-      `Reason: ${reason || "No reason given"}\n` +
-      `Responsible moderator: ${moderator.tag}\n\n` +
-      `ID: ${user.id} • ${new Date().toLocaleString()}`
+      `Offender: ${user.username} <@${user.id}>
+Reason: ${reason || "No reason given"}
+Responsible moderator: ${moderator.tag}
+
+ID: ${user.id} • ${new Date().toLocaleString()}`
     );
 };

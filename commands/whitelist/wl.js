@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
+const data = require("../../utils/dataManager");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,21 +11,12 @@ module.exports = {
         .setRequired(true)
     ),
 
-  async execute(interaction, client) {
+  async execute(interaction) {
 
     const user = interaction.options.getUser("user");
 
-    client.db.run(
-      `INSERT OR IGNORE INTO whitelist VALUES (?)`,
-      [user.id],
-      (err) => {
-        if (err) {
-          console.error(err);
-          return interaction.editReply("❌ Failed");
-        }
+    data.addUser(user.id);
 
-        interaction.editReply("✅ Added to whitelist");
-      }
-    );
+    await interaction.editReply("✅ Added to whitelist");
   }
 };

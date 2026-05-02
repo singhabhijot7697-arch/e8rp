@@ -3,56 +3,38 @@ require("dotenv").config();
 const { REST, Routes } = require("discord.js");
 const fs = require("fs");
 
+// ✅ Collect commands
 const commands = [];
-const names = new Map(); // ✅ track duplicates
 
 const folders = fs.readdirSync("./commands");
 
 for (const folder of folders) {
-
   const files = fs.readdirSync(`./commands/${folder}`).filter(f => f.endsWith(".js"));
 
   for (const file of files) {
+    const command = require(`./commands/${folder}/${file}`);
 
-    const path = `./commands/${folder}/${file}`;
-    const cmd = require(path);
-
-    // ✅ CHECK DATA EXISTS
-    if (!cmd.data) {
+    if (!command.data) {
       console.log(`❌ Missing data in: ${file}`);
       continue;
     }
 
-    // ✅ CHECK DUPLICATES
-    const name = cmd.data.name;
-
-    if (names.has(name)) {
-      console.log(`❌ DUPLICATE COMMAND: "${name}"`);
-      console.log(`   → ${names.get(name)}`);
-      console.log(`   → ${file}`);
-      continue;
-    }
-
-    names.set(name, file);
-
-    // ✅ VALIDATE COMMAND
     try {
-      const json = cmd.data.toJSON();
-      commands.push(json);
+      commands.push(command.data.toJSON());
     } catch (err) {
-      console.log(`\n❌ BROKEN COMMAND: ${file}`);
+      console.log(`❌ Error in: ${file}`);
       console.error(err);
     }
   }
 }
 
-// ✅ REST SETUP
+// ✅ REST setup
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
-// ✅ DEPLOY
+// ✅ Deploy
 (async () => {
   try {
-    console.log(`\n🚀 Deploying ${commands.length} valid commands...`);
+    console.log(`🚀 Deploying ${commands.length} commands...`);
 
     await rest.put(
       Routes.applicationCommands(process.env.CLIENT_ID),
@@ -60,7 +42,6 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
     );
 
     console.log("✅ Commands deployed successfully");
-
   } catch (error) {
     console.error("❌ Deploy error:", error);
   }

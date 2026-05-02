@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const ownerLog = require("../../utils/ownerLogger");
+const log = require("../../utils/commandLogger");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -7,7 +7,7 @@ module.exports = {
     .setDescription("Make bot say something")
     .addStringOption(o =>
       o.setName("message")
-        .setDescription("Message")
+        .setDescription("Message to send")
         .setRequired(true)
     ),
 
@@ -15,17 +15,13 @@ module.exports = {
 
     const msg = interaction.options.getString("message");
 
+    // ✅ SEND TO CHANNEL
     await interaction.channel.send(msg);
 
-    // ✅ OWNER LOG
-    ownerLog(client, {
-      user: interaction.user,
-      command: "/say",
-      guild: interaction.guild,
-      channel: interaction.channel.name,
-      details: msg
-    });
+    // ✅ LOG
+    log(client, interaction, `Message: ${msg}`);
 
-    interaction.editReply("✅ Sent");
+    // ✅ PRIVATE CONFIRM
+    await interaction.editReply("✅ Sent");
   }
 };

@@ -3,8 +3,11 @@ const getLogChannel = require("../../utils/getLogChannel");
 
 module.exports = {
   name: "messageUpdate",
+
   async execute(oldMsg, newMsg, client) {
-    if (!oldMsg.guild || oldMsg.content === newMsg.content) return;
+
+    // ✅ MUST BE INSIDE FUNCTION
+    if (!oldMsg.guild || !oldMsg.author || oldMsg.author.bot) return;
 
     const ch = await getLogChannel(client, oldMsg.guild.id);
     if (!ch) return;
@@ -16,10 +19,12 @@ module.exports = {
         iconURL: oldMsg.author.displayAvatarURL()
       })
       .setDescription(
-        `**Message edited in ${oldMsg.channel}**\n` +
-        `**Before:** ${oldMsg.content || "None"}\n` +
-        `**After:** ${newMsg.content || "None"}\n\n` +
-        `ID: ${oldMsg.author.id} • ${new Date().toLocaleString()}`
+`**Message edited in ${oldMsg.channel}**
+
+**Before:** ${oldMsg.content || "None"}
+**After:** ${newMsg.content || "None"}
+
+ID: ${oldMsg.author.id} • ${new Date().toLocaleString()}`
       );
 
     ch.send({ embeds: [embed] });

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const ownerLog = require("../../utils/ownerLogger");
+const log = require("../../utils/commandLogger");
 
 module.exports = {
   data: new SlashCommandBuilder()

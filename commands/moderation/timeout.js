@@ -3,19 +3,20 @@ const parseTime = require("../../utils/timeParser");
 const formatTime = require("../../utils/formatTime");
 const getModLogChannel = require("../../utils/getModLogChannel");
 const createEmbed = require("../../utils/modEmbed");
+const createDM = require("../../utils/modDM");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("timeout")
-    .setDescription("Timeout user")
+    .setDescription("Timeout a user")
     .addUserOption(o =>
       o.setName("user")
-        .setDescription("User")
+        .setDescription("User to timeout")
         .setRequired(true)
     )
     .addStringOption(o =>
       o.setName("time")
-        .setDescription("Time (example: 1h, 30m, 2d)")
+        .setDescription("Time (example: 1h, 2d 3h, 30m)")
         .setRequired(true)
     )
     .addStringOption(o =>
@@ -31,33 +32,41 @@ module.exports = {
 
     const time = parseTime(timeInput);
 
+    // ✅ INVALID TIME CHECK
     if (!time) {
-      return interaction.editReply("❌ Invalid time format (use 1h, 30m, etc)");
+      return interaction.editReply("❌ Invalid time format (use 1h, 2d 3h, 30m)");
     }
 
-    await member.timeout(time).catch(()=>{});
+    // ✅ APPLY TIMEOUT
+    await member.timeout(time, reason).catch(() => {
+      return interaction.editReply("❌ Failed to timeout user");
+    });
 
-    // ✅ DM USER
-    member.send(
-`You have been timed out
-Server: ${interaction.guild.name}
-Duration: ${formatTime(time)}
-Reason: ${reason}`
-    ).catch(()=>{});
+    // ✅ DM USER (EMBED)
+    const dmEmbed = createDM(
+      "Timeout",
+      interaction.guild,
+      interaction.user,
+      reason,
+      `Duration: ${formatTime(time)}`
+    );
+
+    member.send({ embeds: [dmEmbed] }).catch(() => {});
 
     // ✅ MOD LOG
-    const ch = await getModLogChannel(client, interaction.guild.id);
+    const logChannel = await getModLogChannel(client, interaction.guild.id);
 
-    if (ch) {
+    if (logChannel) {
       const embed = createEmbed(
         member.user,
         interaction.user,
         `${reason} (${formatTime(time)})`
       );
 
-      ch.send({ embeds: [embed] });
+      logChannel.send({ embeds: [embed] });
     }
 
+    // ✅ FINAL RESPONSE
     interaction.editReply(`✅ Timed out for ${formatTime(time)}`);
   }
 };

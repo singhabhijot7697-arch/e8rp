@@ -13,10 +13,9 @@ module.exports = async (client, data) => {
     .setColor("#5865F2")
     .setTitle("Command Used")
     .addFields(
-      { name: "User", value: `${data.user.tag} (${data.user.id})` },
+      { name: "User", value: `${data.user.tag}` },
       { name: "Command", value: data.command },
       { name: "Server", value: data.guild?.name || "DM" },
-      { name: "Channel", value: data.channel || "Unknown" },
       { name: "Details", value: data.details || "None" }
     )
     .setTimestamp();

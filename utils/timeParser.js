@@ -1,17 +1,23 @@
 module.exports = function parseTime(input) {
   if (!input) return null;
 
-  const match = input.match(/(\d+)([smhd])/);
-  if (!match) return null;
+  input = input.toLowerCase();
 
-  const value = parseInt(match[1]);
-  const unit = match[2];
+  let total = 0;
+  const regex = /(\d+)\s*(d|h|m|s)/g;
+  let match;
 
-  switch (unit) {
-    case "s": return value * 1000;
-    case "m": return value * 60 * 1000;
-    case "h": return value * 60 * 60 * 1000;
-    case "d": return value * 24 * 60 * 60 * 1000;
-    default: return null;
+  while ((match = regex.exec(input)) !== null) {
+    const value = parseInt(match[1]);
+    const unit = match[2];
+
+    switch (unit) {
+      case "d": total += value * 86400000; break;
+      case "h": total += value * 3600000; break;
+      case "m": total += value * 60000; break;
+      case "s": total += value * 1000; break;
+    }
   }
+
+  return total || null;
 };

@@ -1,23 +1,22 @@
 const { SlashCommandBuilder } = require("discord.js");
+const data = require("../../utils/dataManager");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("unwlrole")
-    .setDescription("Remove whitelist role")
+    .setDescription("Remove role from whitelist")
     .addRoleOption(o =>
       o.setName("role")
-        .setDescription("Role to remove")
+        .setDescription("Role")
         .setRequired(true)
     ),
 
-  async execute(interaction, client) {
+  async execute(interaction) {
+
     const role = interaction.options.getRole("role");
 
-    client.db.run(
-      `DELETE FROM wl_roles WHERE guildId=? AND roleId=?`,
-      [interaction.guild.id, role.id]
-    );
+    data.removeRole(interaction.guild.id, role.id);
 
-    interaction.editReply("✅ Role removed");
+    await interaction.editReply("✅ Role removed");
   }
 };
