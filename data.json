@@ -1,8 +1,11 @@
 {
   "whitelist": [],
   "wl_roles": {},
-  "auditLogs": {},
+  "auditLogs": {
+    "1380835013817274469": "1428024172403228829"
+  },
   "modLogs": {},
+  "automod_words": {},
   "ai_channel": {},
   "ai_custom": []
 }

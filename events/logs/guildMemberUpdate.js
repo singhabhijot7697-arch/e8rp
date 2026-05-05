@@ -37,6 +37,7 @@ ID: ${user.id} • ${new Date().toLocaleString()}`
             .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
             .setDescription(
 `**Role removed**
+
 ${removed.map(r => `<@&${r.id}>`).join(", ")}
 
 ID: ${user.id} • ${new Date().toLocaleString()}`
@@ -53,6 +54,7 @@ ID: ${user.id} • ${new Date().toLocaleString()}`
             .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
             .setDescription(
 `**Member Timeout**
+
 <@${user.id}>
 
 ID: ${user.id} • ${new Date().toLocaleString()}`
@@ -69,6 +71,7 @@ ID: ${user.id} • ${new Date().toLocaleString()}`
             .setAuthor({ name: user.username, iconURL: user.displayAvatarURL() })
             .setDescription(
 `**Member Removed From Timeout**
+
 <@${user.id}>
 
 ID: ${user.id} • ${new Date().toLocaleString()}`

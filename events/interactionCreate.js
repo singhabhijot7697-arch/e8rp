@@ -10,20 +10,33 @@ module.exports = {
     const command = client.commands.get(interaction.commandName);
     if (!command) return;
 
-    await interaction.deferReply({ flags: 64 });
-
     try {
 
-      // ✅ ONLY PLACE WHERE PERMISSION CHECK EXISTS
+      // ✅ ALWAYS RESPOND IMMEDIATELY
+      await interaction.deferReply({ ephemeral: true });
+
+      // ✅ PERMISSION CHECK
       if (!(await canUse(client, interaction))) {
         return interaction.editReply("❌ Not allowed");
       }
 
+      // ✅ RUN COMMAND SAFELY
       await command.execute(interaction, client);
 
+      // ✅ SAFETY: if command forgot to reply
+      if (!interaction.replied && !interaction.deferred) {
+        await interaction.editReply("✅ Done");
+      }
+
     } catch (err) {
-      console.error(err);
-      interaction.editReply("❌ Error");
+
+      console.error("COMMAND ERROR:", err);
+
+      try {
+        if (!interaction.replied) {
+          await interaction.editReply("❌ Error occurred");
+        }
+      } catch {}
     }
   }
 };

@@ -3,9 +3,9 @@ require("dotenv").config();
 const { REST, Routes } = require("discord.js");
 const fs = require("fs");
 
-// ✅ Collect commands
 const commands = [];
 
+// ✅ LOAD COMMANDS
 const folders = fs.readdirSync("./commands");
 
 for (const folder of folders) {
@@ -13,36 +13,26 @@ for (const folder of folders) {
 
   for (const file of files) {
     const command = require(`./commands/${folder}/${file}`);
-
-    if (!command.data) {
-      console.log(`❌ Missing data in: ${file}`);
-      continue;
-    }
-
-    try {
-      commands.push(command.data.toJSON());
-    } catch (err) {
-      console.log(`❌ Error in: ${file}`);
-      console.error(err);
-    }
+    commands.push(command.data.toJSON());
   }
 }
 
-// ✅ REST setup
+// ✅ REST
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
-// ✅ Deploy
+// ✅ DEPLOY
 (async () => {
   try {
-    console.log(`🚀 Deploying ${commands.length} commands...`);
+    console.log(`🚀 Registering ${commands.length} commands...`);
 
     await rest.put(
       Routes.applicationCommands(process.env.CLIENT_ID),
       { body: commands }
     );
 
-    console.log("✅ Commands deployed successfully");
-  } catch (error) {
-    console.error("❌ Deploy error:", error);
+    console.log("✅ Commands registered successfully");
+
+  } catch (err) {
+    console.error("❌ Error:", err);
   }
 })();

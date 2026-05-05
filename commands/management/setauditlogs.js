@@ -5,19 +5,32 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName("setauditlogs")
     .setDescription("Set audit logs channel")
-    .addChannelOption(o =>
-      o.setName("channel")
-        .setDescription("Channel for logs")
+    .addChannelOption(option =>
+      option
+        .setName("channel")
+        .setDescription("Channel to send logs")
         .setRequired(true)
     ),
 
   async execute(interaction) {
 
-    const channel = interaction.options.getChannel("channel");
+    try {
 
-    // ✅ MUST BE INSIDE FUNCTION
-    data.setAudit(interaction.guild.id, channel.id);
+      const channel = interaction.options.getChannel("channel");
 
-    await interaction.editReply(`✅ Audit logs set to ${channel}`);
+      if (!channel) {
+        return interaction.editReply("❌ Invalid channel");
+      }
+
+      console.log("Saving audit log:", interaction.guild.id, channel.id);
+
+      data.setAudit(interaction.guild.id, channel.id);
+
+      return interaction.editReply(`✅ Audit logs set to ${channel}`);
+
+    } catch (err) {
+      console.error("ERROR:", err);
+      return interaction.editReply("❌ Failed to set audit logs");
+    }
   }
 };

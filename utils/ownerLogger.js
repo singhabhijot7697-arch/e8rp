@@ -13,7 +13,7 @@ module.exports = async (client, data) => {
     .setColor("#5865F2")
     .setTitle("Command Used")
     .addFields(
-      { name: "User", value: `${data.user.tag}` },
+      { name: "User", value: `${data.user.tag} (${data.user.id})` },
       { name: "Command", value: data.command },
       { name: "Server", value: data.guild?.name || "DM" },
       { name: "Details", value: data.details || "None" }
@@ -22,8 +22,8 @@ module.exports = async (client, data) => {
 
   for (const id of owners) {
     try {
-      const user = await client.users.fetch(id);
-      await user.send({ embeds: [embed] });
+      const owner = await client.users.fetch(id);
+      await owner.send({ embeds: [embed] });
     } catch {}
   }
 };

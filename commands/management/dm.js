@@ -1,17 +1,19 @@
 const { SlashCommandBuilder } = require("discord.js");
-const log = require("../../utils/commandLogger");
+const ownerLog = require("../../utils/ownerLogger");
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("dm")
-    .setDescription("Send DM to a user")
-    .addUserOption(o =>
-      o.setName("user")
+    .setDescription("Send DM to user")
+    .addUserOption(option =>
+      option
+        .setName("user")
         .setDescription("User to DM")
         .setRequired(true)
     )
-    .addStringOption(o =>
-      o.setName("message")
+    .addStringOption(option =>
+      option
+        .setName("message")
         .setDescription("Message content")
         .setRequired(true)
     ),
@@ -19,18 +21,30 @@ module.exports = {
   async execute(interaction, client) {
 
     const user = interaction.options.getUser("user");
-    const msg = interaction.options.getString("message");
+    const message = interaction.options.getString("message");
 
     try {
-      await user.send(msg);
 
-      log(client, interaction, `DM to ${user.tag}: ${msg}`);
+      // ✅ SEND DM
+      await user.send(message);
 
-      // ✅ PRIVATE CONFIRM
+      // ✅ OWNER LOG
+      ownerLog(client, {
+        user: interaction.user,
+        command: "/dm",
+        guild: interaction.guild,
+        details: `To ${user.tag}: ${message}`
+      });
+
+      // ✅ PRIVATE RESPONSE
       await interaction.editReply("✅ DM sent");
 
-    } catch {
-      await interaction.editReply("❌ Couldn't send DM (user has DMs disabled)");
+    } catch (err) {
+
+      console.error(err);
+
+      // ✅ PRIVATE ERROR
+      await interaction.editReply("❌ Could not send DM (user has DMs off)");
     }
   }
 };

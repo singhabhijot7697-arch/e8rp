@@ -4,20 +4,31 @@ const data = require("../../utils/dataManager");
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("setmodlogs")
-    .setDescription("Set mod logs channel")
-    .addChannelOption(o =>
-      o.setName("channel")
-        .setDescription("Channel")
+    .setDescription("Set moderation logs channel")
+    .addChannelOption(option =>
+      option
+        .setName("channel")
+        .setDescription("Channel to send mod logs")
         .setRequired(true)
     ),
 
   async execute(interaction) {
 
-    const channel = interaction.options.getChannel("channel");
+    try {
 
-    // ✅ FIX
-    data.setMod(interaction.guild.id, channel.id);
+      const channel = interaction.options.getChannel("channel");
 
-    await interaction.editReply(`✅ Mod logs set to ${channel}`);
+      if (!channel) {
+        return interaction.editReply("❌ Invalid channel");
+      }
+
+      data.setMod(interaction.guild.id, channel.id);
+
+      return interaction.editReply(`✅ Mod logs set to ${channel}`);
+
+    } catch (err) {
+      console.error("SET MOD ERROR:", err);
+      return interaction.editReply("❌ Failed to set mod logs");
+    }
   }
 };

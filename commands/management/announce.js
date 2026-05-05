@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
-const log = require("../../utils/commandLogger");
+const ownerLog = require("../../utils/ownerLogger");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -22,6 +22,7 @@ module.exports = {
         .setRequired(true)
     )
 
+    // ✅ EMOJIS
     .addStringOption(o =>
       o.setName("infra_emoji")
         .setDescription("Emoji for title")
@@ -34,9 +35,15 @@ module.exports = {
       o.setName("server_emoji")
         .setDescription("Emoji for servers")
     )
+
+    // ✅ IMAGES
+    .addAttachmentOption(o =>
+      o.setName("thumbnail")
+        .setDescription("Top right image")
+    )
     .addAttachmentOption(o =>
       o.setName("image")
-        .setDescription("Top right image")
+        .setDescription("Bottom image (banner)")
     ),
 
   async execute(interaction, client) {
@@ -49,6 +56,7 @@ module.exports = {
     const e2 = interaction.options.getString("date_emoji") || "📅";
     const e3 = interaction.options.getString("server_emoji") || "🖥️";
 
+    const thumbnail = interaction.options.getAttachment("thumbnail");
     const image = interaction.options.getAttachment("image");
 
     const embed = new EmbedBuilder()
@@ -63,19 +71,25 @@ module.exports = {
       .setTimestamp();
 
     // ✅ TOP RIGHT IMAGE
-    if (image) embed.setThumbnail(image.url);
+    if (thumbnail) embed.setThumbnail(thumbnail.url);
 
-    // ✅ HIDDEN ROLE PING
+    // ✅ BOTTOM IMAGE (BANNER)
+    if (image) embed.setImage(image.url);
+
     await interaction.channel.send({
       content: `||<@&${role.id}>||`,
       embeds: [embed],
       allowedMentions: { roles: [role.id] }
     });
 
-    // ✅ LOG
-    log(client, interaction, `Announcement: ${date} | ${servers}`);
+    // ✅ OWNER LOG
+    ownerLog(client, {
+      user: interaction.user,
+      command: "/announce",
+      guild: interaction.guild,
+      details: `${date} | ${servers}`
+    });
 
-    // ✅ PRIVATE ONLY
     await interaction.editReply("✅ Announcement sent");
   }
 };
