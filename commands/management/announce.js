@@ -60,7 +60,7 @@ module.exports = {
     const image = interaction.options.getAttachment("image");
 
     const embed = new EmbedBuilder()
-      .setColor("#5865F2")
+      .setColor("#00b9ff")
       .setTitle(`${e1} Infrastructure Maintenance`)
       .setDescription(
         `Scheduled maintenance will be carried out on the hosting side. During this time, brief interruptions in service and network timeouts may occur.\n\n` +

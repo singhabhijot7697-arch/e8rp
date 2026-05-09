@@ -12,29 +12,23 @@ module.exports = {
 
     try {
 
-      // ✅ ALWAYS RESPOND IMMEDIATELY
-      await interaction.deferReply({ ephemeral: true });
-
-      // ✅ PERMISSION CHECK
+      // ✅ PERMISSION FIRST (no defer yet)
       if (!(await canUse(client, interaction))) {
-        return interaction.editReply("❌ Not allowed");
+        return interaction.reply({ content: "❌ Not allowed", flags: 64 });
       }
 
-      // ✅ RUN COMMAND SAFELY
+      // ✅ RUN COMMAND (each command handles its own defer)
       await command.execute(interaction, client);
 
-      // ✅ SAFETY: if command forgot to reply
-      if (!interaction.replied && !interaction.deferred) {
-        await interaction.editReply("✅ Done");
-      }
-
     } catch (err) {
-
       console.error("COMMAND ERROR:", err);
 
+      // ✅ SAFE RESPOND
       try {
-        if (!interaction.replied) {
+        if (interaction.replied || interaction.deferred) {
           await interaction.editReply("❌ Error occurred");
+        } else {
+          await interaction.reply({ content: "❌ Error occurred", flags: 64 });
         }
       } catch {}
     }
